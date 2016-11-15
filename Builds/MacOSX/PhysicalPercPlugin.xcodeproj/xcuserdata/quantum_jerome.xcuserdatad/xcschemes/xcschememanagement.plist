@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SchemeUserState</key>
+	<dict>
+		<key>PhysicalPercPlugin (All).xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>0</integer>
+		</dict>
+		<key>PhysicalPercPlugin (Shared Code).xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>3</integer>
+		</dict>
+		<key>PhysicalPercPlugin (VST).xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+		<key>PhysicalPercPlugin (VST3).xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>CC887D06A00A51E2A66FA14C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D51C4099E0FB35DA9F8897DF</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E5EE264F096E318DA1E7872C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F407EB19848B242CBB14F9CA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+	</dict>
+</dict>
+</plist>
