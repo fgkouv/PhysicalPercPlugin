@@ -15,8 +15,7 @@
 class PercussionVoice :  public SynthesiserVoice
 {
 public:
-    
-    PercussionVoice();
+    PercussionVoice(float tension,float damping,float thickness,int material,float volume);
     ~PercussionVoice();
     
     bool canPlaySound(SynthesiserSound* sound) override;
@@ -30,10 +29,30 @@ public:
     void controllerMoved(int /*controllerNumber*/, int /*newValue*/) override {};
     
     void renderNextBlock(AudioSampleBuffer& outputBuffer, int startSample, int numSamples) override ;
+    
+    void setParameters();
 
     ScopedPointer<Plate> note;
     
 private:
+    double m_sampleRate;
+    
+    void mapMidiToSizes(int midi)
+    {
+        m_Lx = (LxMax-LxMin) * (midi-midiMin) / (midiMax - midiMin) + LxMin;
+        m_Lx = LxMax - m_Lx + LxMin;
+        m_Ly = m_Lx;
+    }
+    
+    float m_Lx, m_Ly;
+    float m_stiffness, m_damping, m_thickness, m_material, m_volume;
+
+    const int midiMax {108};
+    const int midiMin {21};
+    const float LxMax {1.6f};
+    const float LxMin {0.22f};
+    
+
     
 };
 

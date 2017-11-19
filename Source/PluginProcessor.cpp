@@ -1,18 +1,22 @@
-/*
-  ==============================================================================
+/* ==============================================================================
 
     This file was auto-generated!
 
     It contains the basic framework code for a JUCE plugin processor.
 
-  ==============================================================================
-*/
-
+  ============================================================================== */
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #define DEFAULT_SAMPLE_RATE 44100
-
-
+//==============================================================================
+class PercSound : public SynthesiserSound
+{
+public:
+    PercSound() {}
+    
+    bool appliesToNote      (int /*midiNoteNumber*/)    override  { return true; }
+    bool appliesToChannel   (int /*midiChannel*/)       override  { return true; }
+};
 //==============================================================================
 PhysicalPercPluginAudioProcessor::PhysicalPercPluginAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -28,6 +32,14 @@ PhysicalPercPluginAudioProcessor::PhysicalPercPluginAudioProcessor()
 {
         
     plate = new Plate(DEFAULT_SAMPLE_RATE, Lx, Ly, thickness, stiffness, damping, materialChoice);
+      
+    for (int i = numVoices; --i >= 0;)
+    {
+        synth.addVoice (new PercussionVoice(stiffness, damping, thickness, materialChoice, volume));
+    }
+    
+    synth.clearSounds();
+    synth.addSound (new PercSound());
     
     /*
     percussionVoice = new PercussionVoice();
@@ -57,6 +69,7 @@ bool PhysicalPercPluginAudioProcessor::acceptsMidi() const
     return false;
    #endif
 }
+
 bool PhysicalPercPluginAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
@@ -86,8 +99,6 @@ void PhysicalPercPluginAudioProcessor::prepareToPlay (double sampleRate, int sam
 {
     midiCollector.reset(sampleRate);
     synth.setCurrentPlaybackSampleRate(sampleRate);
-
-
 }
 
 void PhysicalPercPluginAudioProcessor::releaseResources()
@@ -97,26 +108,39 @@ void PhysicalPercPluginAudioProcessor::releaseResources()
 
 void PhysicalPercPluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-
+    const int numSamples = buffer.getNumSamples();
+    keyboardState.processNextMidiBuffer (midiMessages, 0, numSamples, true);
+    synth.renderNextBlock (buffer, midiMessages, 0, numSamples);
+    
+    //MidiBuffer::Iterator midiBufferIterator(midiMessages);
+    
+    MidiBuffer midiBuffer;
+    MidiMessage midiMessage;
+    synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
+    
+    
+    /*
     int sample_number;
     MidiBuffer::Iterator midi_buffer_iterator(midiMessages);
     MidiMessage midi_message;
-    
+
     while (midi_buffer_iterator.getNextEvent(midi_message,sample_number))
     {
-        if (midi_message.isNoteOn())
-        {
-            setDimensions(midi_message.getNoteNumber());
-            plate->reset(getSampleRate(), Lx, Ly, thickness, stiffness, damping, materialChoice);
-            
-            for (int chan=0; chan<buffer.getNumChannels(); ++chan)
-            {
-                float* channelData = buffer.getWritePointer(chan);
-                plate->getPercussionNote(channelData,buffer.getNumSamples());
-    
-            }
         
+     if (midi_message.isNoteOn())
+     {
+        setDimensions(midi_message.getNoteNumber());
+        plate->reset(getSampleRate(), Lx, Ly, thickness, stiffness, damping, materialChoice);
+     
+        for (int chan=0; chan<buffer.getNumChannels(); ++chan)
+        {
+            float* channelData = buffer.getWritePointer(chan);
+            plate->getPercussionNote(channelData,buffer.getNumSamples());
         }
+        
+    }
+    */
+        
         
         
         /*
@@ -130,11 +154,11 @@ void PhysicalPercPluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, 
                 //std::cout << channelData[i] << std::endl;
             }
         }
-        */
+       
         
     }
     
-
+ */
 
     /*
     const int totalNumInputChannels  = getTotalNumInputChannels();
@@ -147,7 +171,6 @@ void PhysicalPercPluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, 
 
 //~|~|~|~|~|~|~|~|~|~|~|~|~|~|~|~|~|~|
 //====================================
-
 //==============================================================================
 #ifndef JucePlugin_PreferredChannelConfigurations
 bool PhysicalPercPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
@@ -156,8 +179,7 @@ bool PhysicalPercPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout
     ignoreUnused (layouts);
     return true;
 #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
+
     if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
         && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
         return false;

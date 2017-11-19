@@ -33,6 +33,8 @@ PhysicalPercPluginAudioProcessorEditor::PhysicalPercPluginAudioProcessorEditor (
     volumeSlider.setValue(0.0);
     volumeSlider.setSliderStyle(juce::Slider::LinearVertical);
     volumeSlider.addListener (this);
+    volumeSlider.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
+    volumeSlider.setPopupDisplayEnabled(true, this);
     
     addAndMakeVisible (dampingSlider);
     addAndMakeVisible (dampingLabel);
@@ -83,9 +85,10 @@ void PhysicalPercPluginAudioProcessorEditor::paint (Graphics& g)
 void PhysicalPercPluginAudioProcessorEditor::resized()
 {
     const int sliderLeft = 120;
-    volumeSlider.setBounds(750,40,getWidth()/3 - sliderLeft - 50,120);
+    
+    volumeSlider.setBounds(750, 40, 100, 120);
     dampingSlider.setBounds (sliderLeft, 40, getWidth()/3 - sliderLeft - 10, 40);
-    stiffnessSlider.setBounds (sliderLeft, 60, getWidth()/3 - sliderLeft - 10, 60);
+    stiffnessSlider.setBounds (sliderLeft, 80, getWidth()/3 - sliderLeft - 10, 40);
     thickSlider.setBounds (4*sliderLeft, 40, getWidth()/3 + sliderLeft - 300, 40);
     materials.setBounds (4*sliderLeft, 90, 1.5*sliderLeft, 50);
     
@@ -101,10 +104,13 @@ void PhysicalPercPluginAudioProcessorEditor::sliderValueChanged(Slider* slider)
 {
     if (slider == &volumeSlider)
         processor.setVolume(slider->getValue());
+    
     if (slider == &thickSlider)
         processor.setThickness(slider->getValue());
+    
     if (slider == &dampingSlider)
         processor.setDamping(slider->getValue());
+    
     if (slider == &stiffnessSlider)
         processor.setStiffness(slider->getValue());
 }

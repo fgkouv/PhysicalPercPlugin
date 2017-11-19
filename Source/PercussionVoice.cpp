@@ -7,10 +7,16 @@
 
   ==============================================================================
 */
-
 #include "PercussionVoice.h"
-PercussionVoice::PercussionVoice()
+PercussionVoice::PercussionVoice(float stiffness,float damping,float thickness,int material,float volume)
 {
+    //note = new Plate();
+    
+    m_stiffness = stiffness;
+    m_damping = damping;
+    m_thickness = thickness;
+    m_material = material;
+    m_volume = volume;
 }
 
 
@@ -25,23 +31,34 @@ bool PercussionVoice::canPlaySound(SynthesiserSound* sound)
 }
 
 
-void PercussionVoice::startNote(int midiNoteNumber, float velocity, SynthesiserSound*, int /*currentPitchWheelPosition*/)
+void PercussionVoice::startNote(int midiNoteNumber, float velocity, SynthesiserSound* , int /*currentPitchWheelPosition*/)
 {
-   //note = new PERC(midiNoteNumber, velocity, (float)getSampleRate(),Tens,Damp,Thik,Mtrl,Vol);
-    std::cout << "note = " << midiNoteNumber << std::endl;
+    m_sampleRate = getSampleRate();
+    
+    mapMidiToSizes(midiNoteNumber);
+    note = new Plate(m_sampleRate, m_Lx, m_Ly, m_thickness, m_stiffness, m_damping, m_material);
 }
 
 
 
 void PercussionVoice::renderNextBlock(AudioSampleBuffer& outputBuffer, int startSample, int numSamples)
 {
+    const int leftChanIndex = 0;
+    const int rightChanIndex = 1;
     
- //   float* buf = (float *)outputBuffer.getWritePointer(0);
- //   if (note != nullptr) {
-//        note->renderToBuffer(&buf[startSample], numSamples, isKeyDown() /*|| isSustainPedalDown()*/);
-  //      if (!note->is_alive()) {
-    //        clearCurrentNote();
-  //          note = nullptr;}
- //   }
+    float* buf = (float *)outputBuffer.getWritePointer(leftChanIndex);
+
+    if (note != nullptr)
+    {
+        note->renderToBuffer(&buf[startSample], numSamples, isKeyDown() /*|| isSustainPedalDown()*/);
+        
+        FloatVectorOperations::copy(outputBuffer.getWritePointer(rightChanIndex), buf, numSamples);
+        
+        if (!note->isAlive())
+        {
+            clearCurrentNote();
+            note = nullptr;
+        }
+    }
 
 }

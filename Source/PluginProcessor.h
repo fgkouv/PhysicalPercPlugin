@@ -45,30 +45,36 @@ public:
     {
         thickness = newThickness;
         plate->reset(getSampleRate(), Lx, Ly, thickness, stiffness, damping, materialChoice);
+        synth.addVoice (new PercussionVoice(stiffness, damping, thickness, materialChoice, volume));
+
     }
     
     void setDamping     (float newDamping)
     {
         damping = newDamping;
         plate->reset(getSampleRate(), Lx, Ly, thickness, stiffness, damping, materialChoice);
+        synth.addVoice (new PercussionVoice(stiffness, damping, thickness, materialChoice, volume));
     }
     
     void setVolume      (float newVolume)
     {
         volume = newVolume;
         plate->reset(getSampleRate(), Lx, Ly, thickness, stiffness, damping, materialChoice);
+        synth.addVoice (new PercussionVoice(stiffness, damping, thickness, materialChoice, volume));
     }
     
     void setStiffness   (float newStiffness)
     {
         stiffness = newStiffness;
         plate->reset(getSampleRate(), Lx, Ly, thickness, stiffness, damping, materialChoice);
+        synth.addVoice (new PercussionVoice(stiffness, damping, thickness, materialChoice, volume));
     }
     
     void setMaterial    (int newMaterial)
     {
         materialChoice = newMaterial;
         plate->reset(getSampleRate(), Lx, Ly, thickness, stiffness, damping, materialChoice);
+        synth.addVoice (new PercussionVoice(stiffness, damping, thickness, materialChoice, volume));
     }
     
     void setDimensions (int midiNote)
@@ -98,14 +104,16 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 private:
     //==============================================================================
-    float thickness     {0.05f};
-    float damping       {0.0f};
-    float volume        {0.0f};
-    float stiffness     {0.0f};
-    int materialChoice  {1};
-    float Lx            {1.0f};
-    float Ly            {1.0f};
+    int materialChoice  { 1 };
     
+    float thickness     { 0.05f};
+    float damping       { 0.0f };
+    float volume        { 0.0f };
+    float stiffness     { 0.0f };
+    float Lx            { 1.0f };
+    float Ly            { 1.0f };
+    
+    const int numVoices {1};
     MidiKeyboardState keyboardState;
     MidiMessageCollector midiCollector;
     AudioDeviceManager inputDeviceManager;
@@ -122,6 +130,8 @@ private:
     };
     
     ScopedPointer<Plate> plate;
+    
+    
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PhysicalPercPluginAudioProcessor)
 };

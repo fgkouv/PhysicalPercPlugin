@@ -1,21 +1,16 @@
-/*
-  ==============================================================================
+/*==============================================================================
 
     Plate.h
     Created: 9 Nov 2016 9:29:05pm
     Author:  F.GK
 
-  ==============================================================================
-*/
+  ============================================================================= */
 
 #ifndef PLATE_H_INCLUDED
 #define PLATE_H_INCLUDED
 #include "../JuceLibraryCode/JuceHeader.h"
 #include <vector>
 #include <numeric>
-
-
-
 
 class Plate
 {
@@ -28,6 +23,13 @@ public:
     
     void getPercussionNote(float* buffer,int numSamples);
     
+    void renderToBuffer(float* outbuf, int samples, bool isDown);
+    
+    bool isAlive()
+    {
+        return (counter < totalDuration);
+    }
+    
 private:
     void setVectorCoefficients();
     
@@ -39,7 +41,7 @@ private:
     int counter;
     int modes;
     int modesSquared;
-    int totalDuration;
+    int totalDuration {44100};
     
     std::vector<float> nextModes;
     std::vector<float> spatial;
